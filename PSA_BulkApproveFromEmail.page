@@ -1,0 +1,337 @@
+<apex:page docType="html-5.0" sidebar="false" showHeader="false" standardStylesheets="false" cache="true" controller="PSA_BulkApproveFromEmailController">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+    <apex:includeScript value="/support/console/32.0/integration.js"/>
+    <script src="{!URLFOR($Resource.SCNewHomePage, '/js/bootstrap_jquerydatatables.js')}"></script>
+    <apex:stylesheet value="{!URLFOR($Resource.SCNewHomePage,'css/bootstrap_jquerydatatable.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.SCNewHomePage,'css/Inline_Styles.css')}"/>
+    <style>
+        body{
+        font-size: 14px;
+        }
+    </style>
+    <apex:form >
+        <head style ="height: 10%;" >
+            <nav class="navbar navbar-inverse">
+                <div id ="MyNavBar" class ="container-fluid" style ="height: 10%;background-color: #ffffff" >
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#tab1"><span class="glyphicon glyphicon-flash" aria-hidden="true">ApprovalLight</span></a>
+                        </li>
+                    </ul>   
+                </div>
+            </nav>
+        </head>
+        <body style ="height: 90%;margin-top=10%">
+            <section id="tab1" class="tab-content active" style ="margin-top: 2%;height: 90%;float:bottom;" >
+                <b>Hello, </b><br/>
+                <apex:actionFunction name="refreshMyTable" action="{!populateMyTable}" reRender="hiddenFieldMyList" oncomplete="reConstructMTable()" status="actMStatusId"/>
+                <apex:param name="name1" value="{!MyFilter1}"/>
+                <apex:param name="name2" value="{!MyFilter2}"/>
+                <apex:param name="name1" value="{!MyFilter3}"/>
+                <apex:param name="name1" value="{!MyFilter4}"/>
+                <apex:param name="name1" value="{!MyFilter5}"/>
+                <apex:actionFunction name="populateMyTable" action="{!populateMyTable}" reRender="hiddenFieldMyList" onComplete="constructMTable()"/>
+                <apex:inputHidden value="{!lMCaseERjson}" id="hiddenFieldMyList"/>
+                <apex:pageblock >
+                    <apex:pageMessages id="showmsg"></apex:pageMessages> 
+                </apex:pageblock>                      
+                <div style="width:100%;overflow:auto;" id="section2">
+                    
+                    <div id = "Container11" style="width: 100%;overflow:auto;background-color: #ffffff">
+                        <div id = "SearchTool" style="display:none;padding-left: 0%;float:left; padding-top: 0%;width: 0%; height:0%;background-color: #f1f1f1">
+                            <span class="glyphicon glyphicon-filter" aria-hidden="true" style="margin-left: 25%"><b>FILTERS</b></span>
+                            <div>
+                                <h5 style="font-family:HelveticaNeueW02">Project:</h5>
+                                <apex:selectList value="{!MyFilter1}" styleclass="form-control" size="1" style="width: 70%; margin-top: 10%;margin-bottom: 10%;margin-right: 10%;margin-left: 10%;padding-right: 10%" onchange="refreshMyTable()"> 
+                                    <apex:selectOptions value="{!projectsOwned}"></apex:selectOptions>
+                                </apex:selectList>
+                            </div>
+                            <div>
+                                <h5 style="font-family:HelveticaNeueW02">Accounts:</h5>
+                                <apex:selectList value="{!MyFilter2}" size="1" styleclass="form-control" style="width: 70%; margin-top: 10%;margin-bottom: 10%;margin-right: 10%;margin-left: 10%;" onchange="refreshMyTable()">
+                                    <apex:selectOptions value="{!AccountsOwned}"></apex:selectOptions>
+                                </apex:selectList>
+                            </div>
+                            <div>
+                                <h5 style="font-family:HelveticaNeueW02">Resource:</h5>
+                                <apex:selectList value="{!MyFilter3}" size="1" styleclass="form-control" style="width: 70%; margin-top: 10%;margin-bottom: 10%;margin-right: 10%;margin-left: 10%;" rendered="true" onchange="refreshMyTable()"> 
+                                    <apex:selectOptions value="{!ResourcesFilter}"></apex:selectOptions>
+                                </apex:selectList>
+                            </div>
+                            <div>
+                                <h5 style="font-family:HelveticaNeueW02">Milestone:</h5>
+                                <apex:selectList value="{!MyFilter4}" size="1" styleclass="form-control" style="width: 70%; margin-top: 10%;margin-bottom: 10%;margin-right: 10%;margin-left: 10%;" onchange="refreshMyTable()"> 
+                                    <apex:selectOption itemLabel="" itemValue=""/>
+                                    <apex:selectOption itemLabel="My Work" itemValue="My Work"/>
+                                    <apex:selectOption itemLabel="Hide Pending" itemValue="Hide Pending"/>
+                                    <apex:selectOption itemLabel="Followed" itemValue="Followed"/>
+                                </apex:selectList>
+                            </div>
+                            <div>
+                                <h5 style="font-family:HelveticaNeueW02">Product</h5>
+                                <apex:selectList value="{!MyFilter5}" size="1" styleclass="form-control" style="width: 70%; margin-top: 10%;margin-bottom: 10%;margin-right: 10%;margin-left: 10%;" onchange="refreshMyTable()"> 
+                                    <apex:selectOption itemLabel="" itemValue=""/>
+                                    <apex:selectOption itemLabel="My Work" itemValue="My Work"/>
+                                    <apex:selectOption itemLabel="Hide Pending" itemValue="Hide Pending"/>
+                                    <apex:selectOption itemLabel="Followed" itemValue="Followed"/>
+                                </apex:selectList>
+                            </div>
+                            <div>
+                                <h5 style="font-family:HelveticaNeueW02">Start Date</h5>
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <input type='date' value="{!MyFilter6}" styleclass="form-control" style="width: 70%; margin-top: 2%;margin-bottom: 7%;margin-right: 10%;margin-left: 10%;" onchange="refreshMyTable()"/>
+                            </div>
+                            <div>
+                                <h5 style="font-family:HelveticaNeueW02">End Date</h5>
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <input type='date' value="{!MyFilter7}" styleclass="form-control" style="width: 70%; margin-top: 2%;margin-bottom: 5%;margin-right: 10%;margin-left: 10%;" onchange="refreshMyTable()"/>
+                            </div>
+                            <div>
+                                <h5 style="font-family:HelveticaNeueW02">Submitted Date</h5>
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <input type='date' value="{!MyFilter8}" styleclass="form-control" style="width: 70%; margin-top: 2%;margin-bottom: 5%;margin-right: 10%;margin-left: 10%;" onchange="refreshMyTable()"/>
+                            </div>
+                        </div>
+                        <div id ="container1" style="float:right;margin-left: 3%; width: 96s%;margin-right: 1%">   
+                            <div class="panel panel-default setheight"> <!--action status-->
+                                <apex:actionStatus id="actMStatusId" >
+                                    <apex:facet name="start">
+                                        <div class="statusOuter">   
+                                            <div class="statusInner">        
+                                                <img src="/img/loading.gif" />       
+                                            </div>             
+                                        </div>
+                                    </apex:facet>            
+                                </apex:actionStatus>
+                                <div id="myTopPanel" class="panelbodytopsection">
+                                    <apex:outputPanel id="myPanel" styleClass="setwidth setheight">   
+                                        <table id="myTable" class="display table table-striped table-responsive" style="white-space: nowrap;table-layout: fixed;width:100%">
+                                            
+                                            <thead>
+                                                
+                                                <tr style="height:25px">
+                                                    <th style="width:auto;">Id</th>
+                                                    <th style="width:auto;">Resource</th>
+                                                    <th style="width:auto;">Project</th>
+                                                    <th style="width:5%;">Sun</th>
+                                                    <th style="width:5%;">Mon</th>
+                                                    <th style="width:5%;">Tue</th>
+                                                    <th style="width:5%;">Wedn</th>
+                                                    <th style="width:5%;">Thur</th>
+                                                    <th style="width:5%;">Fri</th>
+                                                    <th style="width:5%;">Sat</th>
+                                                    <th style="width:5%;">Total</th>
+                                                    <th style="width:10%;">Start Date</th>
+                                                </tr>
+                                                
+                                            </thead>
+                                            
+                                        </table>
+                                    </apex:outputPanel>         
+                                </div> 
+                                
+                            </div>
+                        </div>
+                        <div style ="margin-left: 45%;height: 90%;float:center;">
+                            <b>Comments:</b><br></br>
+                        <apex:inputTextarea value="{!Comments}" id="BulkComments"/>
+                        <br></br>
+                    <br></br>
+                <div style="margin-left: 5%;float:center;">
+                    <apex:commandButton value="Approve" action="{!ApproveMyRecords}" status="actMStatusId" rerender="showmsg" styleclass="btn btn-success"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+
+<script type="text/javascript">
+var mTable=null; 
+function constructMTable() {
+    
+    var mdatas = JSON.parse(document.getElementById('{!$Component.hiddenFieldMyList}').value);          
+    
+    mTable=  $('#myTable').DataTable( {
+        
+        fixedHeader: {
+            footer: true
+        },
+        "data": mdatas,
+        "columns":[
+            {
+                "data": "Id",
+                "type": "html",
+                "mRender" : function(data,type,full) {
+                    return '<p class="truncate">' + data+ '</p>';
+                }
+            },
+            {
+                "data": "pse__Resource__r.Name",
+                "type": "html",
+                "mRender" : function(data,type,full) {
+                    return '<p  class="truncate">' + data+ '</p>';
+                }
+            },
+            {
+                "data": "pse__Project__r.Name",
+                "type": "html",
+                "mRender" : function(data,type,full) {
+                    return '<p  class="truncate">' + data+ '</p>';
+                }
+            },
+            {
+                "data": "pse__Sunday_Hours__c",
+                "type": "html",
+                "mRender" : function(data,type,full) {
+                    if(full.pse__Sunday_Notes__c==undefined)
+                    {
+                        return '<p  class="truncate">'+ data + '</p>';
+                    }
+                    else
+                    {
+                        return '<a  class="truncate" data-toggle="tooltip" html: "true" title="Sunday : '+full.pse__Sunday_Notes__c+'">' + data+ '</a>';
+                    }
+                }
+            },
+            {
+                "data": "pse__Monday_Hours__c",
+                "type": "html",
+                "mRender" : function(data,type,full) {
+                    if(full.pse__Monday_Notes__c==undefined)
+                    {
+                        return '<p  class="truncate">'+ data + '</p>';
+                    }
+                    else
+                    {
+                        return '<a  class="truncate" data-toggle="tooltip" html: "true" title="Monday : '+full.pse__Monday_Notes__c+'">' + data+ '</a>';
+                    }
+                }
+            },
+            {
+                "data": "pse__Tuesday_Hours__c",
+                "type": "html",
+                "mRender" : function(data,type,full) {if(full.pse__Tuesday_Notes__c==undefined)
+                {
+                    return '<p  class="truncate">'+ data + '</p>';
+                }
+                                                      else
+                                                      {
+                                                          return '<a  class="truncate" data-toggle="tooltip" html: "true" title="Tuesday : '+full.pse__Tuesday_Notes__c+'">' + data+ '</a>';
+                                                      }
+                                                     }
+            },
+            {
+                "data": "pse__Wednesday_Hours__c",
+                "type": "html",
+                "mRender" : function(data,type,full) {if(full.pse__Wednesday_Notes__c==undefined)
+                {
+                    return '<p  class="truncate">'+ data + '</p>';
+                }
+                                                      else
+                                                      {
+                                                          return '<a  class="truncate" data-toggle="tooltip" html: "true" title="Wednesday : '+full.pse__Wednesday_Notes__c+'">' + data+ '</a>';
+                                                      }
+                                                     }
+            },
+            {
+                "data": "pse__Thursday_Hours__c",
+                "type": "html",
+                "mRender" : function(data,type,full) {if(full.pse__Thursday_Notes__c==undefined)
+                {
+                    return '<p  class="truncate">'+ data + '</p>';
+                }
+                                                      else
+                                                      {
+                                                          return '<a  class="truncate" data-toggle="tooltip" html: "true" title="Thursday : '+full.pse__Thursday_Notes__c+'">' + data+ '</a>';
+                                                      }
+                                                     }
+            },
+            {
+                "data": "pse__Friday_Hours__c",
+                "type": "html",
+                "mRender" : function(data,type,full) {if(full.pse__Friday_Notes__c==undefined)
+                {
+                    return '<p  class="truncate">'+ data + '</p>';
+                }
+                                                      else
+                                                      {
+                                                          return '<a  class="truncate" data-toggle="tooltip" html: "true" title="Friday : '+full.pse__Friday_Notes__c+'">' + data+ '</a>';
+                                                      }
+                                                     }
+            },
+            {
+                "data": "pse__Saturday_Hours__c",
+                "type": "html",
+                "mRender" : function(data,type,full) {if(full.pse__Saturday_Notes__c==undefined)
+                {
+                    return '<p  class="truncate">'+ data + '</p>';
+                }
+                                                      else
+                                                      {
+                                                          return '<a  class="truncate" data-toggle="tooltip" html: "true" title="Saturday : '+full.pse__Saturday_Notes__c+'">' + data+ '</a>';
+                                                      }
+                                                     }
+            },
+            {
+                "data": "pse__Total_Hours__c",
+                "type": "html",
+                "mRender" : function(data,type,full) {
+                    if(full.pse__Additional_Notes__c==undefined)
+                    {
+                        return '<p  class="truncate">'+ data + '</p>';
+                    }
+                    else
+                    {
+                        return '<a  class="truncate" data-toggle="tooltip" html: "true" title="Notes : '+full.pse__Additional_Notes__c+'">' + data+ '</a>';
+                    }
+                    
+                }
+            },
+            {
+                "data": "pse__Start_Date__c",
+                "type": "html",
+                "mRender" : function(data,type,full) {
+                    return '<p  class="truncate">' + data+ '</p>';
+                }
+            }
+            
+            
+            
+        ]
+    });
+}
+function reConstructMTable(){
+    if(mTable!= null)
+    { mTable.destroy();}
+    constructMTable();
+};
+$(document).ready(function(){
+    
+    populateMyTable();
+    $('.nav-tabs > li > a').click(function(event){
+        event.preventDefault();//stop browser to take action for clicked anchor
+        
+        //get displaying tab content jQuery selector
+        var active_tab_selector = $('.nav-tabs > li.active > a').attr('href');                  
+        
+        //find actived navigation and remove 'active' css
+        var actived_nav = $('.nav-tabs > li.active');
+        actived_nav.removeClass('active');
+        
+        //add 'active' css into clicked navigation
+        $(this).parents('li').addClass('active');
+        
+        //hide displaying tab content
+        $(active_tab_selector).removeClass('active');
+        $(active_tab_selector).addClass('hide');
+        
+        //show target tab content
+        var target_tab_selector = $(this).attr('href');
+        $(target_tab_selector).removeClass('hide');
+        $(target_tab_selector).addClass('active');
+    });
+} );   
+</script>
+</apex:form>
+</apex:page>
